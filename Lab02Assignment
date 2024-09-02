@@ -1,0 +1,47 @@
+#Write an algorithm to determine whether a number is a prime number. The algorithm should iterate through possible divisors and determine if the number has any divisors other than 1 and itself.
+OUTPUT "Enter a number"
+INPUT number
+found = FALSE
+FOR count = 2 to (number DIV 2 )
+  IF number MOD count = 0 THEN
+    found = TRUE
+    ENDIF
+ENDFOR
+IF found THEN
+  Print "the number is not prime"
+ELSE
+  Print "the number is a prime number"
+
+#Create an algorithm that asks the user for a day number (1-365) and outputs the corresponding day of the week, assuming that January 1st is a Monday.
+print " enter a day number"
+INPUT day
+rmd = day MOD 7
+IF rmd = 0 THEN
+  Print "Monday"
+ELSEIF rmd = 1
+  Print "Tuesday"
+ELSEIF rmd  = 2
+  Print "Wednesday"
+ELSEIF rmd = 3 
+  Print "Thursday "
+ELSEIF rmd = 4
+  Print "Friday "
+ELSEIF rmd = 5
+  Print "Saturday "
+ELSE
+  Print "Sunday"
+ENDIF
+
+#Develop an algorithm for a program that takes two numbers as input and finds the Greatest Common Divisor (GCD) of the two numbers using the Euclidean algorithm.
+input num1 , num2
+IF num1 < num2 THEN
+  smaller = num1
+ELSE 
+  smaller = num2
+ENDIF
+FOR count = 1 to smaller
+  IF num1 MOD count = 0 AND num2 MOD count= 0 THEN:
+    HCF = count
+  ENDIF
+ENDFOR
+print HCF
