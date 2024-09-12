@@ -1,1 +1,93 @@
   
+Q1.
+Int function is a 32-bit data type which has a range of -2,147,483,648 to 2,147,483,648. The integer value 3000000000 exceeds this value due to which an integer overflow is shown as an output. For greater integer values, there are other data types that exists such as long long data type which could be used inorder to avoid integer overflow.
+Q2.
+
+// question 2
+#include <stdio.h>
+Int main(){
+Int a,b;
+Printf(“Enter first number(a) “);
+Scanf(“%d”,&a);
+Printf(“Enter second number(b) “);
+Scanf(“%d”,&b);
+A=a+b;
+B=a-b;
+A=a-b;
+Printf(“the value of a = %d \nthe value of b = %d”, a,b);
+Return 0 ;
+}
+
+// question 3
+#include <stdio.h>
+Int main()
+{
+Float taxrate, salary;
+Printf(“enter the taxrate “);
+Scanf(“ %f”,&taxrate);
+Printf(“enter the salary “);
+Scanf(“ %f”,&salary);
+Printf(“the tax you have to pay is: %.2f \nThe salary after you have paid the tax is: %.2f”,(taxrate*salary/100),(100-taxrate)*salary/100);
+Return 0;
+}
+
+  
+
+
+
+
+
+
+Qs4.
+#include <stdio.h>
+ int main() {
+ float distanceAB=1207.0,fuelpriceforward=118.0;
+ float fuelpricereturn=123.0;
+ float totaldistance,fuelavg,totallitresconsumed;
+ float litresconsumedforward,litresconsumedreturn,forwardcost;
+ float returncost,totalfuelcost;
+ printf("Enter fuel average as a positive integer");
+ scanf("%f",&fuelavg);
+ totaldistance=distanceAB*2;
+ totallitresconsumed=totaldistance/fuelavg;
+ printf("Total fuel consumed is %2f",totallitresconsumed);
+ litresconsumedforward=distanceAB/fuelavg;
+ forwardcost=litresconsumedforward*118.0;
+ litresconsumedreturn=distanceAB/fuelavg;
+ returncost=litresconsumedreturn*123.0;
+ totalfuelcost=forwardcost+returncost;
+ printf("Total fuel cost is %2f",totalfuelcost);
+      return 0;
+}
+ 
+Qs5.
+#include <stdio.h>
+int main() {
+float simpleinterest,principle,rate,period;
+printf("Enter Principle between 100 to 1000000\n");
+scanf("%f",&principle);
+printf("Enter Rate between 5% to 10%\n");
+scanf("%f",&rate);
+printf("Enter Period between 1 year to 10 years\n");
+scanf("%f",&period);
+simpleinterest=principle*rate/100 *period;
+printf("Simple Interest is %f",simpleinterest);
+     return 0;
+}
+ 
+Qs6.
+#include <stdio.h>
+int main(){   
+int x1,x2,y1,y2,gradient;
+printf("Enter values \n");
+scanf("%d",&x1);
+scanf("%d",&x2);
+scanf("%d",&y1);
+scanf("%d",&y2);
+gradient=y2-y1/x2-x1;
+printf("Gradient is %d",gradient);
+return 0;
+}
+ 
+
+
