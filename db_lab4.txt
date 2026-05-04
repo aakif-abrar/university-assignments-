@@ -1,0 +1,1262 @@
+Pattern Matching Guide for Exam:
+
+Keywords: "Nodes", "Edges", "Map", "Regions", "Adjacent", "Neighbors", "Colors".
+
+Konsa Code? ➔ Graph Coloring. (Agar map of Australia/Pakistan bhi aye, to wo states actually graph ke nodes hi hain).  
+
+Keywords: "Days", "Time slots", "Classes", "Shirts", "Prerequisites", "A cannot happen before B", "Schedule".
+
+Konsa Code? ➔ Wardrobe Scheduler ya Task Scheduling. (Dono ka logic same hai, variables ko din/time aur domain ko kapre/classes assign hote hain).  
+
+Keywords: "Grid", "Rows and Columns", "Diagonals", "Sum is 15", "Non-attacking".
+
+Konsa Code? ➔ N-Queens (agar attack ka zikar ho), Sudoku (agar 2D grid solve karni ho), ya Magic Square (agar math sum ki condition ho).  
+
+Keywords: "Alphabets", "Digits 0-9", words like "SEND + MORE = MONEY", "CROSS + ROADS = DANGER".
+
+Konsa Code? ➔ Cryptarithmetic. (Aankh band kar ke equation change karna aur run kardena).  
+
+Keywords: "The Englishman lives in the red house", "Nationalities", "Pets", "Drinks", "Logical deduction".
+
+Konsa Code? ➔ Zebra Puzzle.  
+
+2. Adversarial Search (Games) Ko Kese Pehchanein?
+Nishani (Sign): Isme hamesha "AI vs Player" ya "Max vs Min" likha hoga. Ek jeetega, ek harega. Isme "turn by turn" khely jane wala logic hota hai .
+
+Engine Rule Yaad rakhna: Inka generic engine alag se copy NAHI karna, inke codes akele (independent) chalte hain.
+
+Pattern Matching Guide for Exam:
+
+Keywords: "3-in-a-row", "Grid of 3x3", "X and O".
+
+Konsa Code? ➔ Tic-Tac-Toe.  
+
+Keywords: "Connect 4", "Drop a piece", "Gravity", "Falls to the bottom", "6x7 grid".
+
+Konsa Code? ➔ Connect-Four. (Isme piece hawa main nahi rakh sakte, wo neechay ja kar girta hai).  
+
+Keywords: "Pile of stones", "Remove 1, 2, or 3 items", "Last one to take loses/wins".
+
+Konsa Code? ➔ Nim Game. (Yahan cheezen board par rakhi nahi jatin, dher se uthaai jati hain).  
+
+Keywords: "Pits", "Store", "Distribute counter-clockwise", "Extra turn", "Capture stones".
+
+Konsa Code? ➔ Mancala.  
+
+Keywords: "Flip pieces", "Flank the opponent", "Trap opponent's color between your colors", "8x8 board".
+
+Konsa Code? ➔ Othello / Reversi.  
+
+Keywords: Koi game ka naam na ho. Sirf list/array di ho maslan [ [ [3, 5], [6, 9] ] ] aur kaha ho "Evaluate the tree".
+
+Konsa Code? ➔ Static Tree Alpha-Beta.  
+
+Keywords: Array of array di ho lekin sath words hon "Dice", "Coin flip", "Probability", "Chance node", "50% chance".
+
+Konsa Code? ➔ Expectiminimax. (Jahan qismat/luck involve ho, wahan simple Minimax kaam nahi karta).
+
+1. The Master Engine (Backtracking)
+Guidelines & Key Changes:
+
+Yeh tumhara core engine hai. Isme exam ke doran koi change nahi karna.
+
+Yeh function 4 cheezen leta hai: assignment (current state), variables (e.g., nodes/days), domains (e.g., colors/clothes), aur is_consistent (tumhari rule-checking function).
+
+
+
+
+def backtrack(assignment, variables, domains, is_consistent):
+    if len(assignment) == len(variables):
+        return assignment
+    
+    var = [v for v in variables if v not in assignment][0]
+    
+    for value in domains[var]:
+        if is_consistent(var, value, assignment):
+            assignment[var] = value
+            result = backtrack(assignment, variables, domains, is_consistent)
+            if result: 
+                return result
+            del assignment[var]
+            
+    return None
+
+
+2. Graph Coloring (Standard & Constrained)
+Guidelines & Key Changes:
+
+Nodes/Variables: Agar graph main A, B, C, D ke bajaye 1, 2, 3, 4 ho, to variables_graph list update karna.  
+
+Colors/Domains: Agar exam main 4 colors hon, to domains_graph ki list main naya color add kardena.  
+
+Edges: neighbors dictionary ko paper wale graph ki lines (edges) ke hisaab se map karna.  
+
+Constrained Graph: Agar paper main sawal ho ke "Node A must be Red", to neechay run_graph() wale function main initial_state ko {} ke bajaye {'A': 'Red'} kardena.
+
+Python
+variables_graph = ['A', 'B', 'C', 'D', 'E']
+domains_graph = {v: ['Red', 'Green', 'Blue'] for v in variables_graph}
+
+neighbors = {
+    'A': ['B', 'E'],
+    'B': ['A', 'C', 'D', 'E'],
+    'C': ['B', 'D'],
+    'D': ['B', 'C', 'E'],
+    'E': ['A', 'B', 'D']
+}
+
+def is_consistent_graph(var, value, assignment):
+    for neighbor in neighbors[var]:
+        if neighbor in assignment and assignment[neighbor] == value:
+            return False
+    return True
+
+def run_graph():
+    initial_state = {}
+    solution = backtrack(initial_state, variables_graph, domains_graph, is_consistent_graph)
+    print("Graph Solution:", solution)
+
+
+3. University Wardrobe Scheduler
+Guidelines & Key Changes:
+
+Variables: Agar din Monday to Saturday ho jayen, to variables_wardrobe main 'Sat' add kardena.  
+
+Inventory: Agar Shirts 5 ki jagah 3 hon, to range(1, 6) ko range(1, 4) kardena.  
+
+Rules: is_consistent_wardrobe main var check kar raha hai din, aur value check kar raha hai kapra. Agar sir bolen "Wednesday ko casual pehnna hai", to bas ek naya if var == 'Wed' and ...: return False condition add kardena.  
+
+Python
+variables_wardrobe = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+
+sq_sets = ['SQ1', 'SQ2']
+sp_combos = [f"Shirt{s}-Pant{p}" for s in range(1, 6) for p in range(1, 4)]
+domains_wardrobe = {day: sq_sets + sp_combos for day in variables_wardrobe}
+
+def is_consistent_wardrobe(var, value, assignment):
+    if value in assignment.values():
+        return False
+        
+    if var in ['Mon', 'Thu'] and not value.startswith('Shirt'):
+        return False
+        
+    if var == 'Fri' and not value.startswith('SQ'):
+        return False
+        
+    return True
+
+def run_wardrobe():
+    solution = backtrack({}, variables_wardrobe, domains_wardrobe, is_consistent_wardrobe)
+    print("Wardrobe Solution:", solution)
+
+
+4. N-Queens Problem (Hard Guess)
+Guidelines & Key Changes:
+
+Board Size: Agar paper main "8-Queens" likha ho, to simply top par N = 4 ko N = 8 kardena. Code automatically board scale karlega.
+
+Logic: Isme abs(r - var) == abs(c - value) diagonal attack check karta hai. Ye universal math hai, isko cheddna nahi.
+
+Python
+N = 4
+variables_nq = list(range(N))
+domains_nq = {v: list(range(N)) for v in variables_nq}
+
+def is_consistent_nqueens(var, value, assignment):
+    for r, c in assignment.items():
+        if c == value:
+            return False
+        if abs(r - var) == abs(c - value):
+            return False
+    return True
+
+def run_nqueens():
+    solution = backtrack({}, variables_nq, domains_nq, is_consistent_nqueens)
+    print("N-Queens Solution:", solution)
+
+
+5. Sudoku Grid Solver (2D Array Special Case)
+Guidelines & Key Changes:
+
+Yeh backtrack() master engine use nahi karta kyunke 2D grid ko is tarah matrix main modify karna zyada asaan/fast hota hai.
+
+Grid Size: Yeh code 6x6 Sudoku ke liye hai.  
+
+If 9x9 comes in exam:
+
+Loop ki range 6 se 9 kardo.
+
+Subgrid math main 2 * (r // 2) aur 3 * (c // 3) ko change karke 3 * (r // 3) aur 3 * (c // 3) kardo.
+
+Andar wale 2 loops ki range range(2) aur range(3) se hata kar dono ko range(3) kardo.
+
+Python
+def is_valid_sudoku(grid, r, c, num):
+    for i in range(6):
+        if grid[r][i] == num or grid[i][c] == num:
+            return False
+            
+    start_row = 2 * (r // 2)
+    start_col = 3 * (c // 3)
+    
+    for i in range(2):
+        for j in range(3):
+            if grid[start_row + i][start_col + j] == num:
+                return False
+    return True
+
+def solve_sudoku(grid):
+    for r in range(6):
+        for c in range(6):
+            if grid[r][c] == 0:
+                for num in range(1, 7):
+                    if is_valid_sudoku(grid, r, c, num):
+                        grid[r][c] = num
+                        if solve_sudoku(grid):
+                            return True
+                        grid[r][c] = 0
+                return False
+    return True
+
+def run_sudoku():
+    # 0 means empty cell
+    board = [
+        [0, 0, 6, 2, 0, 5],
+        [0, 0, 0, 4, 6, 0],
+        [0, 1, 2, 0, 0, 0],
+        [5, 6, 0, 0, 0, 4],
+        [0, 0, 4, 3, 0, 2],
+        [3, 0, 0, 5, 0, 6]
+    ]
+    solve_sudoku(board)
+    print("Sudoku Solved:", board)
+
+1. Cryptarithmetic Puzzle (e.g., SEND + MORE = MONEY)
+Guidelines & Key Changes:
+
+Concept: Har alphabet ko ek unique number (0-9) assign karna hai taake math equation theek solve ho.
+
+Word Change: Agar paper main sawal "TWO + TWO = FOUR" aye, to variables_crypto ki list main ['T', 'W', 'O', 'F', 'U', 'R'] kardena.
+
+Leading Zeros: if var in ['S', 'M'] and value == 0: wali line main un alphabets ko likhna jo word ke start main aa rahe hain (like 'T' aur 'F' in TWO/FOUR), kyunke starting number zero nahi hosakta.
+
+Math Logic Check: Jab saare variables assign ho jayen, tab equation check hoti hai. Equation wali line main apne alphabets ke hisaab se math update kar lena (e.g., two = temp['T']*100 + temp['W']*10 + temp['O']).
+
+Python
+variables_crypto = ['S', 'E', 'N', 'D', 'M', 'O', 'R', 'Y']
+domains_crypto = {v: list(range(10)) for v in variables_crypto}
+
+def is_consistent_crypto(var, value, assignment):
+    if value in assignment.values():
+        return False
+        
+    if var in ['S', 'M'] and value == 0:
+        return False
+        
+    if len(assignment) == len(variables_crypto) - 1:
+        temp = assignment.copy()
+        temp[var] = value
+        
+        send = temp['S']*1000 + temp['E']*100 + temp['N']*10 + temp['D']
+        more = temp['M']*1000 + temp['O']*100 + temp['R']*10 + temp['E']
+        money = temp['M']*10000 + temp['O']*1000 + temp['N']*100 + temp['E']*10 + temp['Y']
+        
+        if send + more != money:
+            return False
+            
+    return True
+
+def run_crypto():
+    solution = backtrack({}, variables_crypto, domains_crypto, is_consistent_crypto)
+    print("Crypto Solution:", solution)
+
+
+2. Map Coloring Problem (Theory / Concept)
+Key Insight: Agar paper main sawal "Color the map of Australia" ajaye, to bilkul confuse nahi hona. Map Coloring aur Graph Coloring exactly same cheez hain.
+
+Trick: Jo states/cities map main ek dusre ki boundary touch kar rahi hain, wo tumhare neighbors hain.
+
+Changes: Apni cheatsheet main jo variables_graph tha, usme A, B, C ki jagah map ki states ke naam likh dena (e.g., 'WA', 'NT', 'SA'). Aur unki borders ko neighbors dictionary main map kardena. Baaki is_consistent_graph ka code 100% same chalega.
+
+
+3. Exam Timetable / Class Scheduling (Theory / Concept)
+Key Insight: Yeh tumhare Wardrobe Scheduler ka hi bhai hai. Dono ka logic same hai.
+
+Trick: Wardrobe main tum Days ko Clothes pehna rahe the. Timetable main tum Time Slots ko Subjects/Exams assign karoge.
+
+Changes: variables list main Time Slots dal dena (e.g., ['9AM', '10AM', '11AM']). domains main Subjects dal dena (e.g., ['Math', 'AI', 'Physics']).
+
+Constraints: Agar sir kahen "AI ka paper 9AM par nahi hosakta", to is_consistent main if var == '9AM' and value == 'AI': return False likh dena. Exact wardrobe wala code use hoga!
+
+
+
+
+
+1. The Minimax Master Engine (with Alpha-Beta Pruning)
+Guidelines & Key Changes:
+
+Yeh tumhara generic engine hai jo har 2-player game par chalega. Cheatsheet main top par isay likh lo.
+
+Depth Limit: depth ka parameter bohot zaroori hai. Tic-Tac-Toe jaise chote games main ise infinity rakh sakte hain, lekin Connect-Four ya Mancala main ise 4 ya 5 par restrict karna parta hai, warna code bohot time lega.
+
+Maximizer vs Minimizer: AI hamesha score max karne ki koshish karta hai, aur Player min karne ki.
+
+
+
+def minimax(state, depth, alpha, beta, is_maximizing):
+    if depth == 0 or game_over(state):
+        return evaluate_board(state)
+
+    if is_maximizing:
+        max_eval = -float('inf')
+        for move in get_valid_moves(state):
+            new_state = make_move(state, move, 'AI')
+            eval = minimax(new_state, depth - 1, alpha, beta, False)
+            max_eval = max(max_eval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha: break 
+        return max_eval
+    else:
+        min_eval = float('inf')
+        for move in get_valid_moves(state):
+            new_state = make_move(state, move, 'Player')
+            eval = minimax(new_state, depth - 1, alpha, beta, True)
+            min_eval = min(min_eval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha: break 
+        return min_eval
+
+
+2. Tic-Tac-Toe (Standard 3x3)
+Guidelines & Key Changes:
+
+Board Representation: Board ek 1D array hai 9 spaces ki: [' ', 'X', 'O', ...]. AI 'X' hai aur Player 'O' hai.
+
+Evaluation: Agar AI jeetay to +10, Player jeetay to -10, Draw par 0.
+
+Board Size Change: Agar exam main 4x4 board ajaye, to win_conditions ko update karna hoga (e.g., (0,1,2,3), (4,5,6,7)...).
+
+Python
+def game_over_ttt(board):
+    return evaluate_board_ttt(board) != 0 or ' ' not in board
+
+def evaluate_board_ttt(board):
+    win_conditions = [
+        (0, 1, 2), (3, 4, 5), (6, 7, 8), # Rows
+        (0, 3, 6), (1, 4, 7), (2, 5, 8), # Cols
+        (0, 4, 8), (2, 4, 6)             # Diags
+    ]
+    for a, b, c in win_conditions:
+        if board[a] == board[b] == board[c] != ' ':
+            return 10 if board[a] == 'X' else -10
+    return 0
+
+def get_valid_moves_ttt(board):
+    return [i for i, spot in enumerate(board) if spot == ' ']
+
+def make_move_ttt(board, move, player):
+    new_board = list(board) # Copy board
+    new_board[move] = 'X' if player == 'AI' else 'O'
+    return new_board
+
+# RUN TT (Need to adjust Minimax slightly to return the BEST MOVE, not just the score)
+def get_best_move_ttt(board):
+    best_val = -float('inf')
+    best_move = -1
+    for move in get_valid_moves_ttt(board):
+        new_board = make_move_ttt(board, move, 'AI')
+        # Using the Master Engine (Depth arbitrarily large for TTT)
+        # Note: You'll need to adapt the master engine call to use TTT specific functions if you don't make them generic.
+        # For a pure generic engine to work, state needs to be an object that holds its rules, or pass functions as args.
+        move_val = minimax_ttt_adapted(new_board, 9, -float('inf'), float('inf'), False) 
+        if move_val > best_val:
+            best_val = move_val
+            best_move = move
+    return best_move
+
+# Adapted Minimax for TTT (To work seamlessly with the specific names)
+def minimax_ttt_adapted(board, depth, alpha, beta, is_maximizing):
+    if depth == 0 or game_over_ttt(board): return evaluate_board_ttt(board)
+    if is_maximizing:
+        max_eval = -float('inf')
+        for move in get_valid_moves_ttt(board):
+            eval = minimax_ttt_adapted(make_move_ttt(board, move, 'AI'), depth-1, alpha, beta, False)
+            max_eval, alpha = max(max_eval, eval), max(alpha, eval)
+            if beta <= alpha: break
+        return max_eval
+    else:
+        min_eval = float('inf')
+        for move in get_valid_moves_ttt(board):
+            eval = minimax_ttt_adapted(make_move_ttt(board, move, 'Player'), depth-1, alpha, beta, True)
+            min_eval, beta = min(min_eval, eval), min(beta, eval)
+            if beta <= alpha: break
+        return min_eval
+(Note: Maine TTT ke liye adapted minimax likh diya hai taake tumhe rules ko object oriented banane main time waste na karna pare. Cheatsheet main seedha yehi adapted version use kar lena TTT ke liye agar object oriented structure mushkil lage).
+
+
+3. The Nim Game (Single Pile)
+Guidelines & Key Changes:
+
+Rules: Ek dher se 1, 2, ya 3 stones utha sakte hain. Jo aakhri uthayega wo jeetega.  
+
+State: Yahan state koi array nahi, sirf ek integer hai (e.g., stones = 15).
+
+Moves Limit Change: Agar paper main aye ke max 4 stones utha sakte hain, to [1, 2, 3] ko [1, 2, 3, 4] kardena.
+
+Misere Play: Agar rule ho ke "Jo aakhri uthayega wo HAAR jayega", to if stones <= 0: wale block main return 1 if is_maximizing else -1 kardena.
+
+Python
+def nim_minimax(stones, is_maximizing):
+    if stones <= 0:
+        return -1 if is_maximizing else 1 # AI jeeta ya hara
+        
+    if is_maximizing:
+        best_score = -float('inf')
+        for move in [1, 2, 3]: # Max 3 stones
+            if stones - move >= 0:
+                score = nim_minimax(stones - move, False)
+                best_score = max(best_score, score)
+        return best_score
+    else:
+        best_score = float('inf')
+        for move in [1, 2, 3]:
+            if stones - move >= 0:
+                score = nim_minimax(stones - move, True)
+                best_score = min(best_score, score)
+        return best_score
+
+def get_best_nim_move(stones):
+    best_move = -1
+    best_score = -float('inf')
+    for move in [1, 2, 3]:
+        if stones - move >= 0:
+            score = nim_minimax(stones - move, False)
+            if score > best_score:
+                best_score = score
+                best_move = move
+    return best_move
+
+
+4. Connect-Four (Heuristic Evaluation Concept)
+Connect-Four poora likhna exam main ajeeb hai kyunke iska board evaluation bohot lamba hota hai. Sirf iska skeleton aata hai.
+
+Guidelines & Key Changes:
+
+Board Representation: 2D Array 6x7 ka.  
+
+Moves: Turn khelne par piece direct sab se neechay jata hai. To get_valid_moves main sirf columns ki list (0-6) ayegi, cells ki nahi.
+
+Depth Limit: Tum isay depth=infinity par nahi chala sakte, isliye depth=4 ya 5 set karna zaroori hai.
+
+Python
+ROWS = 6
+COLS = 7
+
+def get_valid_moves_c4(board):
+    return [col for col in range(COLS) if board[0][col] == 0]
+
+def make_move_c4(board, col, is_ai_turn):
+    new_board = [row[:] for row in board]
+    piece = 1 if is_ai_turn else 2
+    for r in range(ROWS-1, -1, -1):
+        if new_board[r][col] == 0:
+            new_board[r][col] = piece
+            break
+    return new_board
+
+def evaluate_c4(board):
+    return 0 
+
+def game_over_c4(board):
+    return len(get_valid_moves_c4(board)) == 0
+
+def minimax_c4(board, depth, alpha, beta, is_maximizing):
+    valid_moves = get_valid_moves_c4(board)
+    if depth == 0 or game_over_c4(board):
+        return evaluate_c4(board)
+
+    if is_maximizing:
+        max_eval = -float('inf')
+        for move in valid_moves:
+            new_board = make_move_c4(board, move, True)
+            eval = minimax_c4(new_board, depth - 1, alpha, beta, False)
+            max_eval = max(max_eval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha: break
+        return max_eval
+    else:
+        min_eval = float('inf')
+        for move in valid_moves:
+            new_board = make_move_c4(board, move, False)
+            eval = minimax_c4(new_board, depth - 1, alpha, beta, True)
+            min_eval = min(min_eval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha: break
+        return min_eval
+
+def get_best_move_c4(board):
+    best_move = -1
+    best_val = -float('inf')
+    for move in get_valid_moves_c4(board):
+        new_board = make_move_c4(board, move, True)
+        move_val = minimax_c4(new_board, 4, -float('inf'), float('inf'), False)
+        if move_val > best_val:
+            best_val = move_val
+            best_move = move
+    return best_move
+
+
+1. Mancala Game (Core Logic Skeleton)
+Guidelines & Key Changes:
+
+Board Representation: Mancala board 14 pits ki ek array hoti hai. Indices 0 to 5 AI ke pits hain, 6 AI ka Mancala (store) hai. Indices 7 to 12 Player ke pits hain, 13 Player ka Mancala hai.
+
+Valid Moves: AI sirf un pits ko select kar sakta hai (0-5) jinme stones > 0 hon.
+
+Stone Distribution (make_move): Jab turn chalti hai to stones counter-clockwise ghoomte hain. Agar AI ki turn hai to wo Player ke Mancala (index 13) main stone nahi dalega, usay skip karega.
+
+Extra Turn: Agar aakhri stone apne hi Mancala main gire, to dobara turn milti hai. Maine function main extra_turn ka boolean return karwaya hai. Jab isay Minimax main call karoge, to agar extra_turn == True ho, to agli call main is_maximizing ko wapis True hi pass karna.
+
+Capture Rule: Agar aakhri stone tumhare kisi khali pit main gire, to samne wale pit ke saare stones aur tumhara wo ek stone direct tumhare Mancala main chale jate hain.
+
+Python
+def get_valid_moves_mancala(state, is_ai_turn):
+    if is_ai_turn:
+        return [i for i in range(6) if state[i] > 0]
+    else:
+        return [i for i in range(7, 13) if state[i] > 0]
+
+def make_move_mancala(state, move, is_ai_turn):
+    new_state = list(state)
+    stones = new_state[move]
+    new_state[move] = 0
+    idx = move
+
+    while stones > 0:
+        idx = (idx + 1) % 14
+        if is_ai_turn and idx == 13: continue
+        if not is_ai_turn and idx == 6: continue
+        new_state[idx] += 1
+        stones -= 1
+
+    extra_turn = (is_ai_turn and idx == 6) or (not is_ai_turn and idx == 13)
+
+    if new_state[idx] == 1 and ((is_ai_turn and 0 <= idx <= 5) or (not is_ai_turn and 7 <= idx <= 12)):
+        opposite_idx = 12 - idx
+        if new_state[opposite_idx] > 0:
+            if is_ai_turn:
+                new_state[6] += (1 + new_state[opposite_idx])
+            else:
+                new_state[13] += (1 + new_state[opposite_idx])
+            new_state[idx] = 0
+            new_state[opposite_idx] = 0
+
+    return new_state, extra_turn
+
+def game_over_mancala(state):
+    return sum(state[0:6]) == 0 or sum(state[7:13]) == 0
+
+def evaluate_mancala(state):
+    return state[6] - state[13]
+
+def minimax_mancala(state, depth, alpha, beta, is_maximizing):
+    if depth == 0 or game_over_mancala(state):
+        if game_over_mancala(state):
+            final_ai = state[6] + sum(state[0:6])
+            final_player = state[13] + sum(state[7:13])
+            return final_ai - final_player
+        return evaluate_mancala(state)
+
+    valid_moves = get_valid_moves_mancala(state, is_maximizing)
+    
+    if is_maximizing:
+        max_eval = -float('inf')
+        for move in valid_moves:
+            new_state, extra_turn = make_move_mancala(state, move, True)
+            if extra_turn:
+                eval = minimax_mancala(new_state, depth - 1, alpha, beta, True)
+            else:
+                eval = minimax_mancala(new_state, depth - 1, alpha, beta, False)
+            max_eval = max(max_eval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha: break
+        return max_eval
+    else:
+        min_eval = float('inf')
+        for move in valid_moves:
+            new_state, extra_turn = make_move_mancala(state, move, False)
+            if extra_turn:
+                eval = minimax_mancala(new_state, depth - 1, alpha, beta, False)
+            else:
+                eval = minimax_mancala(new_state, depth - 1, alpha, beta, True)
+            min_eval = min(min_eval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha: break
+        return min_eval
+
+def get_best_move_mancala(state):
+    best_move = -1
+    best_val = -float('inf')
+    for move in get_valid_moves_mancala(state, True):
+        new_state, extra_turn = make_move_mancala(state, move, True)
+        if extra_turn:
+            move_val = minimax_mancala(new_state, 4, -float('inf'), float('inf'), True)
+        else:
+            move_val = minimax_mancala(new_state, 4, -float('inf'), float('inf'), False)
+        if move_val > best_val:
+            best_val = move_val
+            best_move = move
+    return best_move
+
+2. Static Tree Alpha-Beta Pruning (Very Important Exam Guess)
+Guidelines & Key Changes:
+
+Concept: Exam main kai baar koi game (Tic-Tac-Toe, Nim) nahi hota. Sirf ek array di hoti hai like [ [ [3, 5], [6, 9] ], [ [1, 2], [0, -1] ] ]. Aur kehte hain is par Minimax Alpha-Beta code run karke batao k final score kya ayega.
+
+Logic: Isme get_valid_moves ya make_move banane ki zaroorat nahi hoti. Tumhara node hi tumhari array hoti hai. Loop us node ke "children" (andar wali lists/numbers) par chalta hai.
+
+Base Case Check: isinstance(node, int) check karta hai ke hum tree ke bilkul end (leaf node) par pohanch gaye hain ya nahi. Agar node integer hai, matlab wo array nahi bachi, to wahi score hai.
+
+Python
+def alpha_beta_static_tree(node, alpha, beta, is_maximizing):
+    if isinstance(node, int):
+        return node
+
+    if is_maximizing:
+        max_eval = -float('inf')
+        for child in node:
+            eval = alpha_beta_static_tree(child, alpha, beta, False)
+            max_eval = max(max_eval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha: 
+                break 
+        return max_eval
+    else:
+        min_eval = float('inf')
+        for child in node:
+            eval = alpha_beta_static_tree(child, alpha, beta, True)
+            min_eval = min(min_eval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha: 
+                break 
+        return min_eval
+
+def run_static_tree():
+    tree = [ 
+        [ [3, 5], [6, 9] ], 
+        [ [1, 2], [0, -1] ] 
+    ]
+    
+    best_score = alpha_beta_static_tree(tree, -float('inf'), float('inf'), True)
+    print(best_score)
+
+
+Part 1: Advanced CSPs (Constraint Satisfaction)
+Usage Rule: In teeno codes ke liye tumhara Master Engine (Backtrack function) top par hona zaroori hai. Yeh usi engine ke sath chalenge.
+
+1. Magic Square (3x3 Grid Math Puzzle)
+Guidelines & Key Changes:
+
+Concept: 3x3 grid main 1 se 9 tak numbers aisay rakhne hain ke har row, column aur diagonal ka sum 15 ho.
+
+Variables: 0 se 8 tak indices hain.
+
+Domains: 1 se 9 tak numbers hain.
+
+Constraint Logic: Hum pehle check karte hain ke list main duplicate na ho. Phir jab poori row (maslan 0,1,2) assign hojaye, to unka sum check karte hain.
+
+Python
+variables_magic = list(range(9))
+domains_magic = {v: list(range(1, 10)) for v in variables_magic}
+
+def is_consistent_magic(var, value, assignment):
+    if value in assignment.values():
+        return False
+        
+    temp = assignment.copy()
+    temp[var] = value
+    
+    lines = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+        [0, 4, 8], [2, 4, 6]             
+    ]
+    
+    for line in lines:
+        if all(idx in temp for idx in line):
+            if sum(temp[idx] for idx in line) != 15:
+                return False
+    return True
+
+def run_magic_square():
+    solution = backtrack({}, variables_magic, domains_magic, is_consistent_magic)
+    print("Magic Square:", solution)
+2. Task Scheduling (With Prerequisites)
+Guidelines & Key Changes:
+
+Concept: Tasks ko time slots assign karne hain, lekin kuch tasks kisi doosre ke baad hi ho sakte hain.
+
+Variables: Tasks ke naam (T1, T2, T3, T4).
+
+Domains: Time slots (1, 2, 3, 4). Time 1 pehle ata hai, 4 baad main.
+
+Rules Change: Paper main agar restrictions alag hon (e.g. T4 must happen BEFORE T2), to if var == 'T4' and 'T2' in assignment: wali logic update karlena.
+
+Python
+variables_tasks = ['T1', 'T2', 'T3', 'T4']
+domains_tasks = {v: [1, 2, 3, 4] for v in variables_tasks}
+
+def is_consistent_tasks(var, value, assignment):
+    if value in assignment.values():
+        return False
+        
+    if var == 'T2' and 'T1' in assignment:
+        if value <= assignment['T1']:
+            return False
+            
+    if var == 'T3' and 'T2' in assignment:
+        if value <= assignment['T2']:
+            return False
+            
+    if var == 'T1' and 'T2' in assignment:
+        if value >= assignment['T2']:
+            return False
+
+    return True
+
+def run_task_scheduling():
+    solution = backtrack({}, variables_tasks, domains_tasks, is_consistent_tasks)
+    print("Task Schedule:", solution)
+3. Mini Zebra Puzzle (Einstein's Riddle)
+Guidelines & Key Changes:
+
+Concept: "Brit lives in the Red house, Swede keeps a Dog". House numbers 1, 2, 3 hain. Har entity ko house number assign karna hai.
+
+Variables: Entity ke naam (Nationalities, Colors, Pets).
+
+Domains: House Numbers [1, 2, 3].
+
+Groups Check: Ek ghar ka color do nahi ho saktay. Isliye groups banaye hain taake 'Red' aur 'Blue' ka same house number na ho.
+
+Python
+variables_zebra = ['Brit', 'Swede', 'Dane', 'Red', 'Blue', 'Green', 'Dog', 'Cat', 'Bird']
+domains_zebra = {v: [1, 2, 3] for v in variables_zebra}
+
+groups = [
+    ['Brit', 'Swede', 'Dane'],
+    ['Red', 'Blue', 'Green'],
+    ['Dog', 'Cat', 'Bird']
+]
+
+def is_consistent_zebra(var, value, assignment):
+    for group in groups:
+        if var in group:
+            for other in group:
+                if other != var and other in assignment and assignment[other] == value:
+                    return False
+
+    temp = assignment.copy()
+    temp[var] = value
+
+    if 'Brit' in temp and 'Red' in temp and temp['Brit'] != temp['Red']: return False
+    if 'Swede' in temp and 'Dog' in temp and temp['Swede'] != temp['Dog']: return False
+    if 'Dane' in temp and 'Cat' in temp and temp['Dane'] != temp['Cat']: return False
+
+    return True
+
+def run_zebra():
+    solution = backtrack({}, variables_zebra, domains_zebra, is_consistent_zebra)
+    print("Zebra Puzzle:", solution)
+Part 2: Advanced Adversarial Search Games
+Usage Rule: Yeh codes INDEPENDENT / STANDALONE hain. Inke andar hi inka custom minimax majood hai. Generic engine copy mat karna!
+
+4. Expectiminimax (Static Tree with Probabilities)
+Guidelines & Key Changes:
+
+Concept: Ludo ya Backgammon ki tarah jahan "Chance" (Dice) ka element ho. Isme Max aur Min ke darmiyan Chance nodes hotay hain jo probability nikalte hain.
+
+Tree Structure: Array aisi hoti hai [ [ [2, 4], [3, 5] ] ]. Agar node chance node hai, to wo apne bacho ka average (ya probability sum) nikalta hai.
+
+Usage: Yeh static tree wala sawal hi ata hai paper main, bas argument main is_chance=True/False flip karna hota hai.
+
+Python
+def expectiminimax_tree(node, depth, node_type):
+    if isinstance(node, int) or depth == 0:
+        return node
+
+    if node_type == 'MAX':
+        max_eval = -float('inf')
+        for child in node:
+            eval = expectiminimax_tree(child, depth - 1, 'CHANCE')
+            max_eval = max(max_eval, eval)
+        return max_eval
+
+    elif node_type == 'MIN':
+        min_eval = float('inf')
+        for child in node:
+            eval = expectiminimax_tree(child, depth - 1, 'CHANCE')
+            min_eval = min(min_eval, eval)
+        return min_eval
+
+    elif node_type == 'CHANCE':
+        expected_value = 0
+        probability = 1.0 / len(node)
+        for child in node:
+            next_type = 'MIN' if depth % 2 != 0 else 'MAX'
+            eval = expectiminimax_tree(child, depth - 1, next_type)
+            expected_value += probability * eval
+        return expected_value
+
+def run_expecti_tree():
+    tree = [ [ [3, 12], [8, 2] ], [ [4, 6], [14, 5] ] ]
+    score = expectiminimax_tree(tree, 3, 'MAX')
+    print("Expectiminimax Score:", score)
+
+5. Othello / Reversi (Flanking/Flipping Logic Skeleton)
+Guidelines & Key Changes:
+
+Concept: Agar paper main Othello aya, to wo poora game nahi mangenge. Sirf make_move (flanking pieces) aur get_valid_moves puchenge.
+
+Board: 8x8 grid. Empty = 0, AI = 1, Player = 2.
+
+Logic: Hum har 8 directions (up, down, left, right, diagonals) main dekhte hain ke opponent ka piece ghir gaya hai ya nahi.
+
+Python
+DIRS = [(0,1), (1,0), (0,-1), (-1,0), (1,1), (-1,-1), (1,-1), (-1,1)]
+
+def is_valid_othello_move(board, r, c, player):
+    if board[r][c] != 0: return False
+    opponent = 2 if player == 1 else 1
+    
+    for dr, dc in DIRS:
+        nr, nc = r + dr, c + dc
+        found_opp = False
+        while 0 <= nr < 8 and 0 <= nc < 8 and board[nr][nc] == opponent:
+            nr += dr
+            nc += dc
+            found_opp = True
+        if found_opp and 0 <= nr < 8 and 0 <= nc < 8 and board[nr][nc] == player:
+            return True
+    return False
+
+def get_valid_moves_othello(board, player):
+    moves = []
+    for r in range(8):
+        for c in range(8):
+            if is_valid_othello_move(board, r, c, player):
+                moves.append((r, c))
+    return moves
+
+def make_move_othello(board, move, player):
+    r, c = move
+    new_board = [row[:] for row in board]
+    new_board[r][c] = player
+    opponent = 2 if player == 1 else 1
+
+    for dr, dc in DIRS:
+        nr, nc = r + dr, c + dc
+        pieces_to_flip = []
+        while 0 <= nr < 8 and 0 <= nc < 8 and new_board[nr][nc] == opponent:
+            pieces_to_flip.append((nr, nc))
+            nr += dr
+            nc += dc
+        if 0 <= nr < 8 and 0 <= nc < 8 and new_board[nr][nc] == player:
+            for fr, fc in pieces_to_flip:
+                new_board[fr][fc] = player
+    return new_board
+
+
+
+
+
+====================================================================================
+
+
+Machine Learning (Lab 10 & 11) - Usage Guide
+1. The Universal ML Template (EDA + Classification + Regression)
+Kab use karna hai: Agar paper main koi bilkul naya ya anjaan dataset ajaye (e.g., Housing Prices, Student Grades) aur sir bolein ke ispar basic Machine Learning apply karo.
+Key Changes needed in exam: 1. pd.read_csv('dataset.csv') main apne dataset ka naam likhna.2. target_column_name ko change karke us column ka naam rakhna jo predict karna hai.Engine 
+Rule: 100% Independent.
+
+2. Lab 10: Task 1 - Loan Dataset (Classification + Regression + Balancing)
+Kab use karna hai: Agar sawal specifically "Loan" wala ajaye , ya koi aisa sawal ho jisme ek hi code main Classification (e.g., Approval prediction) aur Regression (e.g., Amount prediction) dono karni hon, aur data ko "Balance" karna ho.  
+Key Changes needed in exam: 1. Sirf loan_data.csv ka naam file ke mutabiq change karna hoga.Engine Rule: 100% Independent.
+
+3. Lab 10: Task 2 - Spam Email / Text Classification
+Kab use karna hai: Jab data numbers ki bajaye Text / Sentences ki form main ho. Jaise Emails ko Spam/Not Spam classify karna ho, ya Customer Reviews ko Positive/Negative classify karna ho.  Key Changes needed in exam: 1. CSV file ka naam (emails.csv).2. Text wale column ka naam (email_content).3. Target wale column ka naam (is_spam).Engine Rule: 100% Independent. (Yeh text ko numbers main convert karta hai CountVectorizer ke zariye).
+
+4. Lab 11: Task 1 - Heart Disease / K-Means Clustering
+Kab use karna hai: Jab sawal main "Un-Supervised Learning", "Clustering", ya "K-Means" ka lafz ajaaye. Isme predict kuch nahi karna hota, sirf groups bananay hotay hain.  Key Changes needed in exam: 1. File ka naam (e.g., 27. heart.csv).2. Agar sir bolein ke 4 clusters banao, to loop main for k in [2, 3, 4]: kar dena.Engine Rule: 100% Independent.
+
+1. Universal EDA & Data Preprocessing (Har ML Sawal ka Pehla Step)Guidelines & Key Changes:Usage: ML ka koi bhi sawal aye (Supervised ho ya Unsupervised), yeh block sab se pehle chalega. Yeh data ko saaf karta hai.File Name: pd.read_csv('dataset.csv') main apne paper wale dataset ka naam dal dena.Target Column: Agar paper main poochein ke "Predict Loan Approval", to target column 'Approved' hoga. Usay drop karke baaki features X banayenge.  Handling Missing Values: Yeh code automatically numerical columns main 'mean' aur categorical main 'mode' daal dega.  Encoding: Scikit-learn strings/text ko nahi samajhta, isliye categorical columns ko LabelEncoder se numbers (0,1,2) main convert karna laazmi hai. 
+
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv('dataset.csv')
+
+df = df.drop_duplicates()
+
+for col in df.columns:
+    if df[col].dtype == 'object':
+        df[col] = df[col].fillna(df[col].mode()[0])
+    else:
+        df[col] = df[col].fillna(df[col].mean())
+
+le = LabelEncoder()
+for col in df.columns:
+    if df[col].dtype == 'object':
+        df[col] = le.fit_transform(df[col])
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+plt.show()
+
+X = df.drop('target_column_name', axis=1)
+y = df['target_column_name']
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+
+2. Supervised Learning: Classification ModelsGuidelines & Key Changes:Pehchan (Pattern): Jab target variable categorical ho (e.g., "Yes/No", "Spam/Not Spam", "Approved/Rejected", "High-value/Low-value").  Usage: Pehle upar wala EDA block chalana, uske baad yeh block chalana. Yeh X_train aur y_train utha kar model train karega.Models: Is block main Decision Tree aur Support Vector Machine (SVM) dono majood hain. Paper main jo poocha jaye, uska print statement rakhna.  
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+dt_model = DecisionTreeClassifier()
+dt_model.fit(X_train, y_train)
+dt_preds = dt_model.predict(X_test)
+
+dt_acc = accuracy_score(y_test, dt_preds)
+print("Decision Tree Accuracy:", dt_acc * 100)
+print("DT Confusion Matrix:\n", confusion_matrix(y_test, dt_preds))
+
+svm_model = SVC(kernel='rbf', C=1, gamma='scale')
+svm_model.fit(X_train, y_train)
+svm_preds = svm_model.predict(X_test)
+
+svm_acc = accuracy_score(y_test, svm_preds)
+print("SVM Accuracy:", svm_acc * 100)
+print("SVM Confusion Matrix:\n", confusion_matrix(y_test, svm_preds))
+
+
+3. Supervised Learning: Regression ModelsGuidelines & Key Changes:Pehchan (Pattern): Jab target variable koi continuous number ho (e.g., "Predict House Price", "Predict Loan Amount", "Temperature").  Usage: EDA block ke baad lagana. Isme accuracy score nahi nikalta, balkay Mean Squared Error (MSE) aur R-Squared (R2) nikalta hai taake error calculate ho.  
+
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+lr_model = LinearRegression()
+lr_model.fit(X_train, y_train)
+lr_preds = lr_model.predict(X_test)
+
+mse = mean_squared_error(y_test, lr_preds)
+r2 = r2_score(y_test, lr_preds)
+
+print("Linear Regression MSE:", mse)
+print("Linear Regression R2 Score:", r2 * 100)
+
+
+4. Unsupervised Learning: K-Means ClusteringGuidelines & Key Changes:Pehchan (Pattern): Jab sawal main "Clustering", "Group customers", ya "Unsupervised" likha ho. Isme koi target column (Y) nahi hota!  Usage: Isme train_test_split ki zaroorat nahi hoti. Sirf EDA wale block se X_scaled uthana hai aur K-Means ko de dena hai.Clusters (K): Paper main agar bolein "Create 3 clusters", to n_clusters=3 kardena.  Visualization: Yeh code scatter plot bhi draw karega results check karne ke liye. (Feature 0 aur Feature 1 ko plot karega, tum paper ke hisaab se index change kar sakte ho).  
+
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+k = 3
+kmeans = KMeans(n_clusters=k, random_state=42)
+clusters = kmeans.fit_predict(X_scaled)
+
+df['Cluster'] = clusters
+
+plt.figure(figsize=(8, 6))
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=clusters, cmap='viridis')
+plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=200, c='red', marker='X')
+plt.title(f'K-Means Clustering with K={k}')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+sns.boxplot(x=df['Cluster'], y=df.iloc[:, 0])
+plt.title('Outlier Check per Cluster')
+plt.show()
+
+
+
+1. "AI Lab 10 Supervised Learning.docx" - Task 01 (Loan Dataset)
+Guidelines & Key Changes:
+
+Concept: Ek hi data par EDA, Classification (Loan Approved or not), Regression (Amount), aur Balancing karni hai.  
+
+DOB to Age: Is code main pd.to_datetime use hota hai dates ko minus karne ke liye.
+
+Balancing: df[df['Approved'] == 1].sample(500) use karke humne 500 approved aur 500 rejected uthaye hain taake class imbalance theek ho.  
+
+Usage: Agar paper main dataset file ka naam kuch aur ho to loan_data.csv change karlena. Target columns Approved aur Approved_loan_amount hain.  
+
+Python
+# Roll No: l240860
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, mean_squared_error, r2_score
+
+df = pd.read_csv('loan_data.csv')
+df = df.drop_duplicates()
+
+for col in df.columns:
+    if df[col].dtype == 'object':
+        df[col] = df[col].fillna(df[col].mode()[0])
+    else:
+        df[col] = df[col].fillna(df[col].mean())
+
+if 'date_of_birth' in df.columns:
+    df['date_of_birth'] = pd.to_datetime(df['date_of_birth'])
+    df['Age'] = (pd.Timestamp.now() - df['date_of_birth']).astype('<m8[Y]')
+    df = df.drop('date_of_birth', axis=1)
+
+le = LabelEncoder()
+for col in df.columns:
+    if df[col].dtype == 'object':
+        df[col] = le.fit_transform(df[col])
+
+scaler = StandardScaler()
+
+def run_models(data, is_balanced=False):
+    print(f"\n--- Running Models (Balanced: {is_balanced}) ---")
+    
+    X_clf = data.drop(['Approved', 'Approved_loan_amount'], axis=1)
+    y_clf = data['Approved']
+    
+    X_clf_scaled = scaler.fit_transform(X_clf)
+    X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_clf_scaled, y_clf, test_size=0.2, random_state=42)
+    
+    clf = DecisionTreeClassifier()
+    clf.fit(X_train_c, y_train_c)
+    preds_c = clf.predict(X_test_c)
+    print("Classification Accuracy:", accuracy_score(y_test_c, preds_c))
+    print("Confusion Matrix:\n", confusion_matrix(y_test_c, preds_c))
+    
+    approved_data = data[data['Approved'] == 1]
+    if len(approved_data) > 0:
+        X_reg = approved_data.drop(['Approved', 'Approved_loan_amount'], axis=1)
+        y_reg = approved_data['Approved_loan_amount']
+        
+        X_reg_scaled = scaler.fit_transform(X_reg)
+        X_train_r, X_test_r, y_train_r, y_test_r = train_test_split(X_reg_scaled, y_reg, test_size=0.2, random_state=42)
+        
+        reg = LinearRegression()
+        reg.fit(X_train_r, y_train_r)
+        preds_r = reg.predict(X_test_r)
+        print("Regression R2 Score:", r2_score(y_test_r, preds_r))
+
+run_models(df, is_balanced=False)
+
+try:
+    df_approved = df[df['Approved'] == 1].sample(n=500, random_state=42, replace=True)
+    df_rejected = df[df['Approved'] == 0].sample(n=500, random_state=42, replace=True)
+    df_balanced = pd.concat([df_approved, df_rejected])
+    run_models(df_balanced, is_balanced=True)
+except ValueError:
+    print("Not enough data to create 500/500 split exactly, skipping balanced run.")
+
+
+
+2. "lab 10 supervised learning.docx" - Task 02 (Spam Email Classification)
+Guidelines & Key Changes:
+
+Concept: Yeh sawal text classification ka hai. Machine learning algorithms raw text (e.g., "Hello, buy this product") ko nahi samajhte.  
+
+Trick: Hum CountVectorizer use karte hain jo text ko numbers (frequency of words) main convert karta hai taake SVM ya Decision Tree usay process kar sake.
+
+Usage: Agar paper main Text/Emails ya Sentiment analysis ka data ho, to yeh block zaroor use hoga.
+
+Python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+
+df_emails = pd.read_csv('emails.csv') 
+
+X_text = df_emails['email_content'] 
+y_spam = df_emails['is_spam'] 
+
+vectorizer = CountVectorizer()
+X_numeric = vectorizer.fit_transform(X_text)
+
+X_train, X_test, y_train, y_test = train_test_split(X_numeric, y_spam, test_size=0.2, random_state=42)
+
+svm_spam = SVC(kernel='linear')
+svm_spam.fit(X_train, y_train)
+
+spam_preds = svm_spam.predict(X_test)
+print("Spam Classification Accuracy:", accuracy_score(y_test, spam_preds) * 100)
+
+
+3. "AI Lab 11 Un-Supervised Learning.docx" - Task 01 (Heart Disease K-Means)Guidelines & Key Changes:Concept: Heart disease data par K-Means clustering karni hai k=2 aur k=3 ke liye. Boxplots aur Scatter plots bhi draw karne hain.  Usage: Isme for k in [2, 3]: ka loop lagaya hai taake dono clustering ek hi baar main plot ho jayen. Scatter plot first aur second column (Age, Cholesterol waghera) ko represent karega.
+Python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+df_heart = pd.read_csv('heart_disease.csv')
+
+df_heart = df_heart.dropna()
+
+scaler = StandardScaler()
+X_heart_scaled = scaler.fit_transform(df_heart)
+
+plt.figure(figsize=(12, 6))
+sns.boxplot(data=df_heart)
+plt.title("Boxplot to check Outliers")
+plt.xticks(rotation=45)
+plt.show()
+
+for k in [2, 3]:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    cluster_labels = kmeans.fit_predict(X_heart_scaled)
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(X_heart_scaled[:, 0], X_heart_scaled[:, 1], c=cluster_labels, cmap='viridis')
+    
+    centers = kmeans.cluster_centers_
+    plt.scatter(centers[:, 0], centers[:, 1], c='red', s=200, marker='X')
+    plt.title(f'K-Means Clustering with K={k}')
+    plt.show()
+
+=======================================================
+
+1. Mid 1: A* Search Algorithm (Shortest Path)
+Guidelines: Start node, goal node, aur graph pass karo. Yeh shortest path aur total cost dono return karega.
+
+Python
+import heapq
+
+def a_star_search(graph, start, goal, heuristics):
+    queue = [(heuristics[start], 0, start, [start])]
+    visited = set()
+
+    while queue:
+        _, cost, current, path = heapq.heappop(queue)
+
+        if current == goal:
+            return path, cost
+
+        if current not in visited:
+            visited.add(current)
+            for neighbor, weight in graph[current].items():
+                if neighbor not in visited:
+                    new_cost = cost + weight
+                    priority = new_cost + heuristics.get(neighbor, 0)
+                    heapq.heappush(queue, (priority, new_cost, neighbor, path + [neighbor]))
+
+    return None, float('inf')
+
+def run_astar():
+    graph = {
+        'A': {'B': 1, 'C': 4},
+        'B': {'A': 1, 'C': 2, 'D': 5},
+        'C': {'A': 4, 'B': 2, 'D': 1},
+        'D': {'B': 5, 'C': 1}
+    }
+    heuristics = {'A': 7, 'B': 6, 'C': 2, 'D': 0}
+    
+    path, cost = a_star_search(graph, 'A', 'D', heuristics)
+    print("A* Path:", path, "Cost:", cost)
+
+
+2. Markov Model (N-Step State Probability)
+Guidelines: Agar sir poochein ke "Aaj Sunny hai, 3 din baad rainy hone ki kya probability hai?", to steps = 3 set kardo aur initial_probs main Sunny ko 1 aur baaki ko 0 kardo.
+
+Python
+import numpy as np
+
+def markov_chain_prob(transition_matrix, initial_probs, steps):
+    trans_mat = np.array(transition_matrix)
+    state_probs = np.array(initial_probs)
+    
+    for _ in range(steps):
+        state_probs = np.dot(state_probs, trans_mat)
+        
+    return state_probs
+
+def run_markov():
+    states = ['Sunny', 'Rainy']
+    
+    transition_matrix = [
+        [0.8, 0.2], 
+        [0.4, 0.6]  
+    ]
+    
+    initial_probs = [1.0, 0.0] 
+    
+    steps = 3
+    final_probs = markov_chain_prob(transition_matrix, initial_probs, steps)
+    
+    for state, prob in zip(states, final_probs):
+        print(f"Prob of {state} after {steps} steps: {prob:.4f}")
+
+
+3. Hidden Markov Model (Viterbi Algorithm)
+Guidelines: Sir mostly ek table dete hain probabilities ka. Tumhe bas woh tables neeche dictionaries (start_p, trans_p, emit_p) main carefully type karne hotay hain. Code most probable hidden sequence bata dega.
+
+Python
+def viterbi(obs, states, start_p, trans_p, emit_p):
+    V = [{}]
+    path = {}
+
+    for y in states:
+        V[0][y] = start_p[y] * emit_p[y][obs[0]]
+        path[y] = [y]
+
+    for t in range(1, len(obs)):
+        V.append({})
+        newpath = {}
+
+        for y in states:
+            (prob, state) = max((V[t-1][y0] * trans_p[y0][y] * emit_p[y][obs[t]], y0) for y0 in states)
+            V[t][y] = prob
+            newpath[y] = path[state] + [y]
+        path = newpath
+
+    (prob, state) = max((V[len(obs) - 1][y], y) for y in states)
+    return prob, path[state]
+
+def run_hmm_viterbi():
+    obs = ['walk', 'shop', 'clean']
+    states = ['Rainy', 'Sunny']
+    
+    start_p = {'Rainy': 0.6, 'Sunny': 0.4}
+    
+    trans_p = {
+        'Rainy': {'Rainy': 0.7, 'Sunny': 0.3},
+        'Sunny': {'Rainy': 0.4, 'Sunny': 0.6}
+    }
+    
+    emit_p = {
+        'Rainy': {'walk': 0.1, 'shop': 0.4, 'clean': 0.5},
+        'Sunny': {'walk': 0.6, 'shop': 0.3, 'clean': 0.1}
+    }
+    
+    max_prob, sequence = viterbi(obs, states, start_p, trans_p, emit_p)
+    print("Most likely hidden sequence:", sequence)
+    print("Probability:", max_prob)
+
