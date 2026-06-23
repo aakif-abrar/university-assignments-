@@ -1,0 +1,3 @@
+  
+Q1.
+Int function is a 32-bit data type which has a range of -2,147,483,648 to 2,147,483,648. The integer value 3000000000 exceeds this value due to which an integer overflow is shown as an output. For greater integer values, there are other data types that exists such as long long data type which could be used inorder to avoid integer overflow.

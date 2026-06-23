@@ -1,0 +1,13 @@
+#Develop an algorithm for a program that takes two numbers as input and finds the Greatest Common Divisor (GCD) of the two numbers using the Euclidean algorithm.
+input num1 , num2
+IF num1 < num2 THEN
+  smaller = num1
+ELSE 
+  smaller = num2
+ENDIF
+FOR count = 1 to smaller
+  IF num1 MOD count = 0 AND num2 MOD count= 0 THEN:
+    HCF = count
+  ENDIF
+ENDFOR
+print HCF

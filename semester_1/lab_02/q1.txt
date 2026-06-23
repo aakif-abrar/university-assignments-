@@ -1,0 +1,14 @@
+#Write an algorithm to determine whether a number is a prime number. The algorithm should iterate through possible divisors and determine if the number has any divisors other than 1 and itself.
+OUTPUT "Enter a number"
+INPUT number
+found = FALSE
+FOR count = 2 to (number DIV 2 )
+  IF number MOD count = 0 THEN
+    found = TRUE
+    ENDIF
+ENDFOR
+IF found THEN
+  Print "the number is not prime"
+ELSE
+  Print "the number is a prime number"
+

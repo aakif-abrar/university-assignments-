@@ -1,0 +1,20 @@
+#Create an algorithm that asks the user for a day number (1-365) and outputs the corresponding day of the week, assuming that January 1st is a Monday.
+print " enter a day number"
+INPUT day
+rmd = day MOD 7
+IF rmd = 0 THEN
+  Print "Monday"
+ELSEIF rmd = 1
+  Print "Tuesday"
+ELSEIF rmd  = 2
+  Print "Wednesday"
+ELSEIF rmd = 3 
+  Print "Thursday "
+ELSEIF rmd = 4
+  Print "Friday "
+ELSEIF rmd = 5
+  Print "Saturday "
+ELSE
+  Print "Sunday"
+ENDIF
+
